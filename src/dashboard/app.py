@@ -15,6 +15,7 @@ from datetime import datetime, timedelta
 import numpy as np
 from typing import Dict, List, Any, Optional
 import os
+import sys
 
 # Page configuration
 st.set_page_config(
@@ -424,7 +425,7 @@ def show_settings_page():
     st.subheader("ℹ️ System Information")
     st.write(f"**API Status:** {'🟢 Connected' if get_api_health().get('status') == 'healthy' else '🔴 Disconnected'}")
     st.write(f"**Streamlit Version:** {st.__version__}")
-    st.write(f"**Python Version:** {st.sys.version}")
+    st.write(f"**Python Version:** {sys.version}")
 
 if __name__ == "__main__":
     main() 
