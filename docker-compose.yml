@@ -1,0 +1,103 @@
+version: '3.8'
+
+services:
+  # API Service
+  api:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    container_name: defi-fraud-api
+    ports:
+      - "8000:8000"
+    environment:
+      - API_HOST=0.0.0.0
+      - API_PORT=8000
+      - ETHEREUM_RPC_URL=${ETHEREUM_RPC_URL:-https://mainnet.infura.io/v3/YOUR_PROJECT_ID}
+      - LOG_LEVEL=INFO
+    volumes:
+      - ./data:/app/data
+      - ./models:/app/models
+      - ./logs:/app/logs
+    command: ["python", "src/api/main.py"]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Dashboard Service
+  dashboard:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    container_name: defi-fraud-dashboard
+    ports:
+      - "8501:8501"
+    environment:
+      - API_HOST=api
+      - API_PORT=8000
+      - DASHBOARD_HOST=0.0.0.0
+      - DASHBOARD_PORT=8501
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    command: ["streamlit", "run", "src/dashboard/app.py", "--server.port=8501", "--server.address=0.0.0.0"]
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # Data Pipeline Service
+  pipeline:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    container_name: defi-fraud-pipeline
+    environment:
+      - ETHEREUM_RPC_URL=${ETHEREUM_RPC_URL:-https://mainnet.infura.io/v3/YOUR_PROJECT_ID}
+      - LOG_LEVEL=INFO
+      - COLLECTION_INTERVAL=300
+    volumes:
+      - ./data:/app/data
+      - ./models:/app/models
+      - ./logs:/app/logs
+    command: ["python", "src/data_pipeline/main.py"]
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # Redis for caching (optional)
+  redis:
+    image: redis:7-alpine
+    container_name: defi-fraud-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+
+  # PostgreSQL for audit trail (optional)
+  postgres:
+    image: postgres:15-alpine
+    container_name: defi-fraud-postgres
+    environment:
+      - POSTGRES_DB=defi_fraud
+      - POSTGRES_USER=defi_user
+      - POSTGRES_PASSWORD=defi_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/init.sql:/docker-entrypoint-initdb.d/init.sql
+    restart: unless-stopped
+
+volumes:
+  redis_data:
+  postgres_data:
+
+networks:
+  default:
+    name: defi-fraud-network 

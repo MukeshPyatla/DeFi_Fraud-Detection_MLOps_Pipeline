@@ -1,0 +1,22 @@
+# Streamlit Cloud Requirements for DeFi Fraud Detection Dashboard
+
+# Core Streamlit
+streamlit==1.27.0
+
+# Data Processing
+pandas==2.0.3
+numpy==1.24.3
+
+# Visualization
+plotly==5.16.1
+
+# HTTP Requests
+requests==2.31.0
+
+# Environment Variables
+python-dotenv==1.0.0
+
+# Optional: For enhanced functionality
+# Uncomment if you want to connect to a deployed API
+# fastapi==0.103.1
+# uvicorn==0.23.2 

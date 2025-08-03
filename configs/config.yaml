@@ -1,0 +1,164 @@
+# Main Configuration for DeFi Fraud Detection MLOps Pipeline
+
+# Application Settings
+app:
+  name: "DeFi Fraud Detection Pipeline"
+  version: "1.0.0"
+  environment: "development"
+  debug: true
+
+# Data Pipeline Configuration
+data_pipeline:
+  # Blockchain Settings
+  blockchain:
+    network: "ethereum"
+    rpc_url: "https://mainnet.infura.io/v3/YOUR_PROJECT_ID"
+    ws_url: "wss://mainnet.infura.io/ws/v3/YOUR_PROJECT_ID"
+    chain_id: 1
+    
+  # Data Collection
+  collection:
+    batch_size: 1000
+    max_retries: 3
+    retry_delay: 5
+    collection_interval: 300  # 5 minutes
+    
+  # Data Processing
+  processing:
+    min_transaction_value: 0.01  # ETH
+    max_transaction_value: 1000  # ETH
+    feature_window_hours: 24
+    anomaly_threshold: 0.95
+    
+  # Storage
+  storage:
+    raw_data_path: "data/raw"
+    processed_data_path: "data/processed"
+    backup_enabled: true
+    compression: "gzip"
+
+# Model Configuration
+model:
+  # Training Settings
+  training:
+    test_size: 0.2
+    random_state: 42
+    cv_folds: 5
+    
+  # Feature Engineering
+  features:
+    transaction_amount: true
+    gas_price: true
+    gas_used: true
+    block_time: true
+    sender_balance: true
+    receiver_balance: true
+    transaction_frequency: true
+    network_congestion: true
+    
+  # Model Parameters
+  parameters:
+    algorithm: "random_forest"
+    n_estimators: 100
+    max_depth: 10
+    min_samples_split: 2
+    min_samples_leaf: 1
+    
+  # Model Storage
+  storage:
+    model_path: "models"
+    versioning: true
+    backup_models: 5
+
+# API Configuration
+api:
+  host: "0.0.0.0"
+  port: 8000
+  workers: 4
+  timeout: 30
+  
+  # Security
+  security:
+    enable_auth: false
+    rate_limit: 100  # requests per minute
+    cors_origins: ["*"]
+    
+  # Monitoring
+  monitoring:
+    enable_metrics: true
+    enable_logging: true
+    log_level: "INFO"
+
+# Dashboard Configuration
+dashboard:
+  host: "0.0.0.0"
+  port: 8501
+  theme: "light"
+  
+  # Features
+  features:
+    real_time_monitoring: true
+    model_comparison: true
+    audit_trail: true
+    alerting: true
+    
+  # Display Settings
+  display:
+    refresh_interval: 30  # seconds
+    max_data_points: 1000
+    chart_height: 400
+
+# Logging Configuration
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file_path: "logs"
+  max_file_size: "10MB"
+  backup_count: 5
+
+# Database Configuration (for audit trail)
+database:
+  url: "sqlite:///data/audit_trail.db"
+  echo: false
+  pool_size: 10
+  max_overflow: 20
+
+# Monitoring and Alerting
+monitoring:
+  # Metrics
+  metrics:
+    fraud_rate_threshold: 0.05
+    accuracy_threshold: 0.85
+    latency_threshold: 1000  # ms
+    
+  # Alerts
+  alerts:
+    email_enabled: false
+    slack_enabled: false
+    webhook_url: ""
+    
+  # Health Checks
+  health_checks:
+    enabled: true
+    interval: 60  # seconds
+    timeout: 10   # seconds
+
+# Security Settings
+security:
+  # Data Privacy
+  privacy:
+    anonymize_data: true
+    retention_days: 90
+    encryption_enabled: true
+    
+  # Access Control
+  access_control:
+    enable_rbac: false
+    admin_users: []
+    
+  # Audit Trail
+  audit:
+    enabled: true
+    log_predictions: true
+    log_model_changes: true
+    log_data_access: true 
