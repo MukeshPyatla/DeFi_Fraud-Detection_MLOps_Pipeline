@@ -1,11 +1,16 @@
 [global]
 developmentMode = false
+headless = true
+enableCORS = true
+enableXsrfProtection = true
+port = 8501
+gatherUsageStats = false
 
 [server]
-headless = true
-enableCORS = false
-enableXsrfProtection = false
 port = 8501
+address = "0.0.0.0"
+enableCORS = true
+enableXsrfProtection = true
 
 [browser]
 gatherUsageStats = false
@@ -15,4 +20,7 @@ primaryColor = "#1f77b4"
 backgroundColor = "#ffffff"
 secondaryBackgroundColor = "#f0f2f6"
 textColor = "#262730"
-font = "sans serif" 
+font = "sans serif"
+
+[logger]
+level = "info" 
